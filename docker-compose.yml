@@ -1,0 +1,34 @@
+version: "3.7"
+
+services:
+  app:
+    env_file: .env
+    container_name: backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - PORT=${PORT}
+        - READER_HOST=${READER_HOST}
+        - READER_PORT=${READER_PORT}
+        - READER_USER=${READER_USER}
+        - READER_PASSWORD=${READER_PASSWORD}
+        - WRITER_HOST=${WRITER_HOST}
+        - WRITER_PORT=${WRITER_PORT}
+        - WRITER_USER=${WRITER_USER}
+        - TIMEOUT_ON_SECONDS=${TIMEOUT_ON_SECONDS}
+        - OPERATION_ON_EACH_CONTEXT=${TIMEOUT_ON_SECONDS}
+    ports:
+      - 8800:8800
+    restart: on-failure
+    volumes:
+      - api:/usr/src/app/
+    networks:
+      - prod
+
+volumes:
+  api:
+
+networks:
+  prod:
+    driver: bridge

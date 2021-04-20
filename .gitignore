@@ -1,0 +1,9 @@
+*.env*
+/node_modules
+dump/
+*_add_dummy_data*
+scripts/
+sql/
+gin-bin
+main
+reksti-ordering-backend

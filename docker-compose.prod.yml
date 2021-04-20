@@ -1,0 +1,22 @@
+version: "3.7"
+
+services:
+  mysql-prod:
+    container_name: mysql_prod_ordering
+    image: "mysql:latest"
+    command: --default-authentication-plugin=mysql_native_password
+    networks:
+      - prod
+    environment:
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=password
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=ordering
+    expose:
+      - 3306
+    ports:
+      - 3336:3306
+
+networks:
+  prod:
+    driver: bridge

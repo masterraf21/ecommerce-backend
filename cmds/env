@@ -1,0 +1,16 @@
+#!/bin/bash
+
+args_array=($*)
+cmd="${args_array[@]:1}"
+
+while IFS='&&' read -ra arr; do
+  for i in "${arr[@]}"; do
+    strlen=`echo -n $i | wc -m`
+
+    if [ $strlen != "0" ]
+    then
+      env $(cat $1 | xargs) $i
+    fi
+
+  done
+done <<< "$cmd"
