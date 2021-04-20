@@ -1,15 +1,11 @@
 version: "3.7"
 
 services:
-  mysql-test:
-    image: "mysql:latest"
-    command: --default-authentication-plugin=mysql_native_password
+  mongo-test:
+    image: "mongo:latest"
     environment:
-      - MYSQL_USER=test
-      - MYSQL_PASSWORD=test
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=test
+      - MONGO_INITDB_DATABASE=test
     ports:
-      - 3316:3306
+      - 27117:27017
     expose:
-      - "3316"
+      - "27117"

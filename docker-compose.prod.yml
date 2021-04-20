@@ -1,21 +1,22 @@
 version: "3.7"
 
 services:
-  mysql-prod:
-    container_name: mysql_prod_ordering
-    image: "mysql:latest"
-    command: --default-authentication-plugin=mysql_native_password
+  mongo-dev:
+    image: "mongo:latest"
+    container_name: mongo_prod_ecommerce
     networks:
       - prod
     environment:
-      - MYSQL_USER=user
-      - MYSQL_PASSWORD=password
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=ordering
+      - MONGO_INITDB_DATABASE=ecommerce
+    volumes:
+      - db:/data/db
     expose:
-      - 3306
+      - 27017
     ports:
-      - 3336:3306
+      - 27317:27017
+
+volumes:
+  db:
 
 networks:
   prod:

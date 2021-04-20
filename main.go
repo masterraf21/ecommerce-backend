@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"log"
 	"net/http"
 	"os"
@@ -11,43 +10,34 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/masterraf21/ecommerce-backend/configs"
-	"github.com/masterraf21/ecommerce-backend/utils/mysql"
+	"github.com/masterraf21/ecommerce-backend/utils/mongodb"
+	"go.mongodb.org/mongo-driver/mongo"
+
 	"github.com/rs/cors"
 )
 
 // Server represents server
 type Server struct {
-	Reader      *sql.DB
-	Writer      *sql.DB
+	Instance    *mongo.Database
 	Port        string
 	ServerReady chan bool
 }
 
-func configureMySQL() (*sql.DB, *sql.DB) {
-	readerConfig := mysql.Option{
-		Host:     configs.MySQL.ReaderHost,
-		Port:     configs.MySQL.ReaderPort,
-		Database: configs.MySQL.Database,
-		User:     configs.MySQL.ReaderUser,
-		Password: configs.MySQL.ReaderPassword,
+func configureMongo() *mongo.Database {
+	option := mongodb.Option{
+		Hosts:    configs.MongoDB.Hosts,
+		Database: configs.MongoDB.Database,
+		Options:  configs.MongoDB.Options,
 	}
 
-	writerConfig := mysql.Option{
-		Host:     configs.MySQL.WriterHost,
-		Port:     configs.MySQL.WriterPort,
-		Database: configs.MySQL.Database,
-		User:     configs.MySQL.WriterUser,
-		Password: configs.MySQL.WriterPassword,
-	}
-
-	reader, writer, err := mysql.SetupDatabase(readerConfig, writerConfig)
+	instance, err := mongodb.Init(option)
 	if err != nil {
-		log.Fatalf("%s: %s", "Failed to connect mysql", err)
+		log.Fatalf("%s: %s", "Failed to connect mongodb", err)
 	}
 
-	log.Println("MySQL connection is successfully established!")
+	log.Println("MongoDB connection is successfully established!")
 
-	return reader, writer
+	return instance
 }
 
 // Start will start server

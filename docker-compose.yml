@@ -9,13 +9,9 @@ services:
       dockerfile: Dockerfile
       args:
         - PORT=${PORT}
-        - READER_HOST=${READER_HOST}
-        - READER_PORT=${READER_PORT}
-        - READER_USER=${READER_USER}
-        - READER_PASSWORD=${READER_PASSWORD}
-        - WRITER_HOST=${WRITER_HOST}
-        - WRITER_PORT=${WRITER_PORT}
-        - WRITER_USER=${WRITER_USER}
+        - MONGO_HOSTS=${MONGO_HOSTS}
+        - MONGO_DATABASE=${MONGO_DATABASE}
+        - MONGO_OPTIONS=${MONGO_OPTIONS}
         - TIMEOUT_ON_SECONDS=${TIMEOUT_ON_SECONDS}
         - OPERATION_ON_EACH_CONTEXT=${TIMEOUT_ON_SECONDS}
     ports:

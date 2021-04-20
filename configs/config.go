@@ -3,10 +3,10 @@ package configs
 // Server config
 var Server *server
 
-// MySQL config
-var MySQL *mysql
+// MongoDB Config
+var MongoDB *mongodb
 
 func init() {
-	MySQL = setupMySQL()
 	Server = setupServer()
+	MongoDB = setupMongoDB()
 }
