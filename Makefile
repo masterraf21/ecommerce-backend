@@ -19,7 +19,7 @@ test:
 
 test-repo:
 	go get -u github.com/kyoh86/richgo
-	./cmds/env env-test richgo test -count=1 ./repositories/mysql -v -cover
+	./cmds/env env-test richgo test -count=1 ./repositories/mongodb -v -cover
 	go mod tidy
 
 tidy:

@@ -11,4 +11,10 @@ type Order struct {
 	Quantity        uint32    `bson:"quantity" json:"quantity"`
 	Price           float32   `bson:"price" json:"price"`
 	TotalPrice      float32   `bson:"total_price" json:"total_price"`
+	Status          string    `bson:"status" json:"status"`
+}
+
+// OrderRepository reprresents repo functions for order
+type OrderRepository interface {
+	Store(order *Order) error
 }

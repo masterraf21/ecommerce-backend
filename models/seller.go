@@ -8,3 +8,8 @@ type Seller struct {
 	Password      string `bson:"password" json:"password"`
 	PickupAddress string `bson:"pickup_address" json:"pickup_address"`
 }
+
+// SellerRepository represents repo functions for seller
+type SellerRepository interface {
+	Store(seller *Seller) error
+}

@@ -8,3 +8,8 @@ type Product struct {
 	Price       float32 `bson:"price" json:"price"`
 	Seller      Seller  `bson:"seller" json:"seller"`
 }
+
+// ProductRepository represents repo functions for product
+type ProductRepository interface {
+	Store(product *Product) error
+}
