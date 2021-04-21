@@ -11,19 +11,19 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-type buyerRepo struct {
+type sellerRepo struct {
 	Instance    *mongo.Database
 	CounterRepo models.CounterRepository
 }
 
-// NewBuyerRepo will create an object representing BuyerRepository
-func NewBuyerRepo(instance *mongo.Database, ctr models.CounterRepository) models.BuyerRepository {
-	return &buyerRepo{Instance: instance, CounterRepo: ctr}
+// NewSellerRepo will initiate object representing SellerRepository
+func NewSellerRepo(instance *mongo.Database, ctr models.CounterRepository) models.SellerRepository {
+	return &sellerRepo{Instance: instance, CounterRepo: ctr}
 }
 
-func (r *buyerRepo) Store(buyer *models.Buyer) (uid primitive.ObjectID, err error) {
-	collectionName := "buyer"
-	identifier := "id_buyer"
+func (r *sellerRepo) Store(seller *models.Seller) (oid primitive.ObjectID, err error) {
+	collectionName := "seller"
+	identifier := "id_seller"
 
 	ctx, cancel := context.WithTimeout(context.Background(), configs.Constant.TimeoutOnSeconds*time.Second)
 	defer cancel()
@@ -34,21 +34,21 @@ func (r *buyerRepo) Store(buyer *models.Buyer) (uid primitive.ObjectID, err erro
 	}
 
 	collection := r.Instance.Collection(collectionName)
-	buyer.ID = id
+	seller.ID = id
 
-	result, err := collection.InsertOne(ctx, buyer)
+	result, err := collection.InsertOne(ctx, seller)
 	if err != nil {
 		return
 	}
 
 	_id := result.InsertedID
-	uid = _id.(primitive.ObjectID)
+	oid = _id.(primitive.ObjectID)
 
 	return
 }
 
-func (r *buyerRepo) GetAll() (res []models.Buyer, err error) {
-	collection := r.Instance.Collection("buyer")
+func (r *sellerRepo) GetAll() (res []models.Seller, err error) {
+	collection := r.Instance.Collection("seller")
 
 	ctx, cancel := context.WithTimeout(context.Background(), configs.Constant.TimeoutOnSeconds*time.Second)
 	defer cancel()
@@ -65,8 +65,22 @@ func (r *buyerRepo) GetAll() (res []models.Buyer, err error) {
 	return
 }
 
-func (r *buyerRepo) GetByOID(oid primitive.ObjectID) (res *models.Buyer, err error) {
-	collection := r.Instance.Collection("buyer")
+func (r *sellerRepo) GetByID(id uint32) (res *models.Seller, err error) {
+	collection := r.Instance.Collection("seller")
+
+	ctx, cancel := context.WithTimeout(context.Background(), configs.Constant.TimeoutOnSeconds*time.Second)
+	defer cancel()
+
+	err = collection.FindOne(ctx, bson.M{"id_seller": id}).Decode(&res)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (r *sellerRepo) GetByOID(oid primitive.ObjectID) (res *models.Seller, err error) {
+	collection := r.Instance.Collection("seller")
 
 	ctx, cancel := context.WithTimeout(context.Background(), configs.Constant.TimeoutOnSeconds*time.Second)
 	defer cancel()
@@ -79,29 +93,15 @@ func (r *buyerRepo) GetByOID(oid primitive.ObjectID) (res *models.Buyer, err err
 	return
 }
 
-func (r *buyerRepo) GetByID(id uint32) (res *models.Buyer, err error) {
-	collection := r.Instance.Collection("buyer")
-
-	ctx, cancel := context.WithTimeout(context.Background(), configs.Constant.TimeoutOnSeconds*time.Second)
-	defer cancel()
-
-	err = collection.FindOne(ctx, bson.M{"id_buyer": id}).Decode(&res)
-	if err != nil {
-		return
-	}
-
-	return
-}
-
-func (r *buyerRepo) UpdateArbitrary(id uint32, key string, value interface{}) error {
-	collection := r.Instance.Collection("buyer")
+func (r *sellerRepo) UpdateArbitrary(id uint32, key string, value interface{}) error {
+	collection := r.Instance.Collection("seller")
 
 	ctx, cancel := context.WithTimeout(context.Background(), configs.Constant.TimeoutOnSeconds*time.Second)
 	defer cancel()
 
 	_, err := collection.UpdateOne(
 		ctx,
-		bson.M{"id_buyer": id},
+		bson.M{"id_seller": id},
 		bson.M{"$set": bson.M{key: value}},
 	)
 	if err != nil {

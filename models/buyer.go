@@ -14,6 +14,7 @@ type Buyer struct {
 // BuyerRepository represents repo functions for Buyer
 type BuyerRepository interface {
 	Store(buyer *Buyer) (primitive.ObjectID, error)
+	GetAll() ([]Buyer, error)
 	GetByID(id uint32) (*Buyer, error)
 	GetByOID(oid primitive.ObjectID) (*Buyer, error)
 	UpdateArbitrary(id uint32, key string, value interface{}) error

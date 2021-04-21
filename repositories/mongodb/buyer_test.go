@@ -19,9 +19,8 @@ func handleError(err error) {
 
 type buyerRepoTestSuite struct {
 	suite.Suite
-	Instance    *mongo.Database
-	CounterRepo models.CounterRepository
-	BuyerRepo   models.BuyerRepository
+	Instance  *mongo.Database
+	BuyerRepo models.BuyerRepository
 }
 
 func TestBuyerRepository(t *testing.T) {
@@ -33,7 +32,6 @@ func (s *buyerRepoTestSuite) SetupSuite() {
 	s.Instance = instance
 	counterRepo := NewCounterRepo(instance)
 	s.BuyerRepo = NewBuyerRepo(instance, counterRepo)
-	s.CounterRepo = counterRepo
 }
 
 func (s *buyerRepoTestSuite) TearDownTest() {
@@ -42,9 +40,16 @@ func (s *buyerRepoTestSuite) TearDownTest() {
 	buyerCollection := s.Instance.Collection("buyer")
 
 	err := buyerCollection.Drop(ctx)
-	if err != nil {
-		panic(err)
-	}
+	handleError(err)
+}
+
+func (s *buyerRepoTestSuite) TearDownSuite() {
+	ctx, cancel := context.WithTimeout(context.Background(), configs.Constant.TimeoutOnSeconds*time.Second)
+	defer cancel()
+	buyerCollection := s.Instance.Collection("buyer")
+
+	err := buyerCollection.Drop(ctx)
+	handleError(err)
 }
 
 func (s *buyerRepoTestSuite) TestStore1() {
@@ -68,7 +73,7 @@ func (s *buyerRepoTestSuite) TestStore1() {
 		s.Assert().Equal(buyer.DeliveryAddress, result.DeliveryAddress)
 	})
 
-	s.Run("Store a single Buyer data after after existing data stored", func() {
+	s.Run("Store a single Buyer data after existing data stored", func() {
 		buyer := models.Buyer{
 			Email:           "test",
 			Name:            "test",
@@ -121,7 +126,7 @@ func (s *buyerRepoTestSuite) TestStore2() {
 	})
 }
 
-func (s *buyerRepoTestSuite) TestGet1() {
+func (s *buyerRepoTestSuite) TestGet() {
 	s.Run("Get a Buyer Data by ID", func() {
 		buyer := models.Buyer{
 			Email:           "test",
@@ -141,9 +146,31 @@ func (s *buyerRepoTestSuite) TestGet1() {
 		s.Assert().Equal(buyer.Password, result.Password)
 		s.Assert().Equal(buyer.DeliveryAddress, result.DeliveryAddress)
 	})
+
+	s.Run("Get all Buyer data", func() {
+		buyer := models.Buyer{
+			Email:           "test",
+			Name:            "test",
+			Password:        "test",
+			DeliveryAddress: "test",
+		}
+		_, err := s.BuyerRepo.Store(&buyer)
+		handleError(err)
+
+		_, err = s.BuyerRepo.Store(&buyer)
+		handleError(err)
+
+		_, err = s.BuyerRepo.Store(&buyer)
+		handleError(err)
+
+		result, err := s.BuyerRepo.GetAll()
+		handleError(err)
+
+		s.Assert().Equal(4, len(result))
+	})
 }
 
-func (s *buyerRepoTestSuite) TestUpdate1() {
+func (s *buyerRepoTestSuite) TestUpdate() {
 	s.Run("Update a buyer Data arbitrarily", func() {
 		buyer := models.Buyer{
 			Email:           "test",
