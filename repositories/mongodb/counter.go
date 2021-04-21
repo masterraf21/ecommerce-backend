@@ -2,6 +2,8 @@ package mongodb
 
 import (
 	"context"
+	"errors"
+	"reflect"
 	"time"
 
 	"github.com/masterraf21/ecommerce-backend/configs"
@@ -30,6 +32,94 @@ func contains(s []string, e string) bool {
 	return false
 }
 
+func dropCounter(ctx context.Context, db *mongo.Database) (err error) {
+	collection := db.Collection("counter")
+	err = collection.Drop(ctx)
+	return
+}
+
+func initCollection(ctx context.Context, db *mongo.Database) error {
+	counter := models.Counter{
+		BuyerID:   0,
+		ProductID: 0,
+		SellerID:  0,
+		OrderID:   0,
+	}
+
+	collection := db.Collection("counter")
+	_, err := collection.InsertOne(ctx, counter)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func getLatestCounter(ctx context.Context, db *mongo.Database) (res *models.Counter, err error) {
+	collection := db.Collection("counter")
+	myOptions := options.FindOne()
+	myOptions.SetSort(bson.M{"$natural": -1})
+
+	err = collection.FindOne(ctx, bson.M{}, myOptions).Decode(&res)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func incrementCounter(ctx context.Context, db *mongo.Database, identifier string, latestCounter models.Counter) error {
+	collection := db.Collection("counter")
+
+	counterMap := structToMap(latestCounter)
+	latestID, ok := counterMap[identifier]
+
+	if !ok {
+		return errors.New("Identifier not found")
+	}
+	id := latestID.(uint32)
+
+	counterMap[identifier] = id + 1
+
+	dataBson := bson.M{}
+	for k, v := range counterMap {
+		dataBson[k] = v
+	}
+
+	_, err := collection.InsertOne(ctx, dataBson)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func structToMap(item interface{}) map[string]interface{} {
+	res := map[string]interface{}{}
+	if item == nil {
+		return res
+	}
+	v := reflect.TypeOf(item)
+	reflectValue := reflect.ValueOf(item)
+	reflectValue = reflect.Indirect(reflectValue)
+
+	if v.Kind() == reflect.Ptr {
+		v = v.Elem()
+	}
+	for i := 0; i < v.NumField(); i++ {
+		tag := v.Field(i).Tag.Get("json")
+		field := reflectValue.Field(i).Interface()
+		if tag != "" && tag != "-" {
+			if v.Field(i).Type.Kind() == reflect.Struct {
+				res[tag] = structToMap(field)
+			} else {
+				res[tag] = field
+			}
+		}
+	}
+	return res
+}
+
 func (r *counterRepo) Get(collectionName string, identifier string) (id uint32, err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), configs.Constant.TimeoutOnSeconds*time.Second)
 	defer cancel()
@@ -39,27 +129,30 @@ func (r *counterRepo) Get(collectionName string, identifier string) (id uint32, 
 		return
 	}
 
-	if !contains(names, collectionName) {
-		id = uint32(1)
-		return
+	if !contains(names, "counter") {
+		initCollection(ctx, r.Instance)
 	}
 
-	collection := r.Instance.Collection(collectionName)
-
-	var result bson.M
-	myOptions := options.FindOne()
-	myOptions.SetSort(bson.M{"$natural": -1})
-
-	err = collection.FindOne(ctx, bson.M{}, myOptions).Decode(&result)
+	latest, err := getLatestCounter(ctx, r.Instance)
 	if err != nil {
 		return
 	}
+	latestMap := structToMap(latest)
 
-	lastID, ok := result[identifier].(int64)
+	latestIDRaw, ok := latestMap[identifier]
 	if !ok {
-		panic(ok)
+		err = errors.New("Identifier not found")
+		return
 	}
-	id = uint32(lastID) + 1
+
+	latestID := latestIDRaw.(uint32)
+
+	id = latestID + 1
+
+	err = incrementCounter(ctx, r.Instance, identifier, *latest)
+	if err != nil {
+		return
+	}
 
 	return
 }

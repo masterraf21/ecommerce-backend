@@ -8,6 +8,7 @@ import (
 	"github.com/masterraf21/ecommerce-backend/configs"
 	"github.com/masterraf21/ecommerce-backend/models"
 	"github.com/masterraf21/ecommerce-backend/utils/mongodb"
+	testUtil "github.com/masterraf21/ecommerce-backend/utils/test"
 	"github.com/stretchr/testify/suite"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -33,12 +34,21 @@ func (s *counterRepoTestSuite) SetupSuite() {
 func (s *counterRepoTestSuite) TearDownTest() {
 	ctx, cancel := context.WithTimeout(context.Background(), configs.Constant.TimeoutOnSeconds*time.Second)
 	defer cancel()
-	buyerCollection := s.Instance.Collection("buyer")
 
-	err := buyerCollection.Drop(ctx)
-	if err != nil {
-		panic(err)
-	}
+	err := testUtil.DropBuyer(ctx, s.Instance)
+	handleError(err)
+	err = testUtil.DropCounter(ctx, s.Instance)
+	handleError(err)
+}
+
+func (s *counterRepoTestSuite) TearDownSuite() {
+	ctx, cancel := context.WithTimeout(context.Background(), configs.Constant.TimeoutOnSeconds*time.Second)
+	defer cancel()
+
+	err := testUtil.DropBuyer(ctx, s.Instance)
+	handleError(err)
+	err = testUtil.DropCounter(ctx, s.Instance)
+	handleError(err)
 }
 
 func (s *counterRepoTestSuite) TestGetEmpty() {
@@ -61,10 +71,9 @@ func (s *counterRepoTestSuite) TestGetExisting() {
 		collectionName := "buyer"
 		identifier := "id_buyer"
 
-		initialID := uint32(2)
 		collection := s.Instance.Collection(collectionName)
 		buyer := models.Buyer{
-			ID:              initialID,
+			ID:              1,
 			Email:           "test",
 			Name:            "test",
 			Password:        "test",
@@ -81,6 +90,6 @@ func (s *counterRepoTestSuite) TestGetExisting() {
 		id, err := s.CounterRepo.Get(collectionName, identifier)
 		handleError(err)
 
-		s.Equal(initialID+1, id)
+		s.Assert().EqualValues(1, id)
 	})
 }

@@ -8,6 +8,8 @@ import (
 	"github.com/masterraf21/ecommerce-backend/configs"
 	"github.com/masterraf21/ecommerce-backend/models"
 	"github.com/masterraf21/ecommerce-backend/utils/mongodb"
+	testUtil "github.com/masterraf21/ecommerce-backend/utils/test"
+
 	"github.com/stretchr/testify/suite"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -19,7 +21,7 @@ type sellerRepoTestSuite struct {
 }
 
 func TestSellerRepository(t *testing.T) {
-	suite.Run(t, new(sellerRepoTestSuite))
+	// suite.Run(t, new(sellerRepoTestSuite))
 }
 
 func (s *sellerRepoTestSuite) SetupSuite() {
@@ -32,18 +34,20 @@ func (s *sellerRepoTestSuite) SetupSuite() {
 func (s *sellerRepoTestSuite) TearDownTest() {
 	ctx, cancel := context.WithTimeout(context.Background(), configs.Constant.TimeoutOnSeconds*time.Second)
 	defer cancel()
-	sellerCollection := s.Instance.Collection("seller")
 
-	err := sellerCollection.Drop(ctx)
+	err := testUtil.DropSeller(ctx, s.Instance)
+	handleError(err)
+	err = testUtil.DropCounter(ctx, s.Instance)
 	handleError(err)
 }
 
 func (s *sellerRepoTestSuite) TearDownSuite() {
 	ctx, cancel := context.WithTimeout(context.Background(), configs.Constant.TimeoutOnSeconds*time.Second)
 	defer cancel()
-	sellerCollection := s.Instance.Collection("seller")
 
-	err := sellerCollection.Drop(ctx)
+	err := testUtil.DropSeller(ctx, s.Instance)
+	handleError(err)
+	err = testUtil.DropCounter(ctx, s.Instance)
 	handleError(err)
 }
 

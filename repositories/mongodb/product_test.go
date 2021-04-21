@@ -9,6 +9,8 @@ import (
 	"github.com/masterraf21/ecommerce-backend/configs"
 	"github.com/masterraf21/ecommerce-backend/models"
 	"github.com/masterraf21/ecommerce-backend/utils/mongodb"
+	testUtil "github.com/masterraf21/ecommerce-backend/utils/test"
+
 	"github.com/stretchr/testify/suite"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -33,18 +35,20 @@ func (s *productRepoTestSuite) SetupSuite() {
 func (s *productRepoTestSuite) TearDownTest() {
 	ctx, cancel := context.WithTimeout(context.Background(), configs.Constant.TimeoutOnSeconds*time.Second)
 	defer cancel()
-	productCollection := s.Instance.Collection("product")
 
-	err := productCollection.Drop(ctx)
+	err := testUtil.DropProduct(ctx, s.Instance)
+	handleError(err)
+	err = testUtil.DropCounter(ctx, s.Instance)
 	handleError(err)
 }
 
 func (s *productRepoTestSuite) TearDownSuite() {
 	ctx, cancel := context.WithTimeout(context.Background(), configs.Constant.TimeoutOnSeconds*time.Second)
 	defer cancel()
-	productCollection := s.Instance.Collection("product")
 
-	err := productCollection.Drop(ctx)
+	err := testUtil.DropProduct(ctx, s.Instance)
+	handleError(err)
+	err = testUtil.DropCounter(ctx, s.Instance)
 	handleError(err)
 }
 
