@@ -7,6 +7,7 @@ import (
 
 	"github.com/masterraf21/ecommerce-backend/configs"
 	"github.com/masterraf21/ecommerce-backend/models"
+	"github.com/masterraf21/ecommerce-backend/utils/mongodb"
 	"github.com/stretchr/testify/suite"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -28,7 +29,7 @@ func TestBuyerRepository(t *testing.T) {
 }
 
 func (s *buyerRepoTestSuite) SetupSuite() {
-	instance := configureMongo()
+	instance := mongodb.ConfigureMongo()
 	s.Instance = instance
 	counterRepo := NewCounterRepo(instance)
 	s.BuyerRepo = NewBuyerRepo(instance, counterRepo)

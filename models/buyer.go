@@ -11,6 +11,14 @@ type Buyer struct {
 	DeliveryAddress string `bson:"delivery_address" json:"delivery_address"`
 }
 
+// BuyerBody body for buyer
+type BuyerBody struct {
+	Email           string `json:"email"`
+	Name            string `json:"name"`
+	Password        string `json:"password"`
+	DeliveryAddress string `json:"delivery_address"`
+}
+
 // BuyerRepository represents repo functions for Buyer
 type BuyerRepository interface {
 	Store(buyer *Buyer) (primitive.ObjectID, error)
@@ -18,4 +26,11 @@ type BuyerRepository interface {
 	GetByID(id uint32) (*Buyer, error)
 	GetByOID(oid primitive.ObjectID) (*Buyer, error)
 	UpdateArbitrary(id uint32, key string, value interface{}) error
+}
+
+// BuyerUsecase will create usecase for buyer
+type BuyerUsecase interface {
+	CreateBuyer(buyer BuyerBody) (uint32, error)
+	GetAll() ([]Buyer, error)
+	GetByID(id uint32) (*Buyer, error)
 }

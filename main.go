@@ -10,7 +10,6 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/masterraf21/ecommerce-backend/configs"
-	"github.com/masterraf21/ecommerce-backend/utils/mongodb"
 	"go.mongodb.org/mongo-driver/mongo"
 
 	"github.com/rs/cors"
@@ -21,23 +20,6 @@ type Server struct {
 	Instance    *mongo.Database
 	Port        string
 	ServerReady chan bool
-}
-
-func configureMongo() *mongo.Database {
-	option := mongodb.Option{
-		Hosts:    configs.MongoDB.Hosts,
-		Database: configs.MongoDB.Database,
-		Options:  configs.MongoDB.Options,
-	}
-
-	instance, err := mongodb.Init(option)
-	if err != nil {
-		log.Fatalf("%s: %s", "Failed to connect mongodb", err)
-	}
-
-	log.Println("MongoDB connection is successfully established!")
-
-	return instance
 }
 
 // Start will start server

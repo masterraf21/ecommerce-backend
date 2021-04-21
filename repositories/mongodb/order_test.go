@@ -8,6 +8,7 @@ import (
 
 	"github.com/masterraf21/ecommerce-backend/configs"
 	"github.com/masterraf21/ecommerce-backend/models"
+	"github.com/masterraf21/ecommerce-backend/utils/mongodb"
 	"github.com/stretchr/testify/suite"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -23,7 +24,7 @@ func TestOrderRepository(t *testing.T) {
 }
 
 func (s *orderRepoTestSuite) SetupSuite() {
-	instance := configureMongo()
+	instance := mongodb.ConfigureMongo()
 	s.Instance = instance
 	counterRepo := NewCounterRepo(instance)
 	s.OrderRepo = NewOrderRepo(instance, counterRepo)
@@ -66,11 +67,19 @@ func (s *orderRepoTestSuite) TestStore() {
 		}
 
 		product := models.Product{
+			ID:          1,
 			ProductName: "test",
 			Description: "test",
 			Price:       10.11,
 			SellerID:    seller.ID,
 			Seller:      &seller,
+		}
+
+		detail := models.OrderDetail{
+			ProductID:  product.ID,
+			Product:    &product,
+			Quantity:   1,
+			TotalPrice: 10,
 		}
 
 		order := models.Order{
@@ -79,13 +88,9 @@ func (s *orderRepoTestSuite) TestStore() {
 			Seller:          &seller,
 			SourceAddress:   "test",
 			DeliveryAddress: "test",
-			Items: []*models.Product{
-				&product,
-				&product,
-				&product,
+			Products: []models.OrderDetail{
+				detail, detail, detail,
 			},
-			Quantity:   3,
-			Price:      25.123,
 			TotalPrice: 100.123,
 			Status:     "test",
 		}
@@ -121,11 +126,19 @@ func (s *orderRepoTestSuite) TestGet1() {
 		}
 
 		product := models.Product{
+			ID:          1,
 			ProductName: "test",
 			Description: "test",
 			Price:       10.11,
 			SellerID:    seller.ID,
 			Seller:      &seller,
+		}
+
+		detail := models.OrderDetail{
+			ProductID:  product.ID,
+			Product:    &product,
+			Quantity:   1,
+			TotalPrice: 10,
 		}
 
 		order := models.Order{
@@ -135,13 +148,9 @@ func (s *orderRepoTestSuite) TestGet1() {
 			Seller:          &seller,
 			SourceAddress:   "test",
 			DeliveryAddress: "test",
-			Items: []*models.Product{
-				&product,
-				&product,
-				&product,
+			Products: []models.OrderDetail{
+				detail, detail, detail,
 			},
-			Quantity:   3,
-			Price:      25.123,
 			TotalPrice: 100.123,
 			Status:     "test",
 		}
@@ -175,11 +184,19 @@ func (s *orderRepoTestSuite) TestGet1() {
 		}
 
 		product := models.Product{
+			ID:          1,
 			ProductName: "test",
 			Description: "test",
 			Price:       10.11,
 			SellerID:    seller.ID,
 			Seller:      &seller,
+		}
+
+		detail := models.OrderDetail{
+			ProductID:  product.ID,
+			Product:    &product,
+			Quantity:   1,
+			TotalPrice: 10,
 		}
 
 		order := models.Order{
@@ -189,13 +206,9 @@ func (s *orderRepoTestSuite) TestGet1() {
 			Seller:          &seller,
 			SourceAddress:   "test",
 			DeliveryAddress: "test",
-			Items: []*models.Product{
-				&product,
-				&product,
-				&product,
+			Products: []models.OrderDetail{
+				detail, detail, detail,
 			},
-			Quantity:   3,
-			Price:      25.123,
 			TotalPrice: 100.123,
 			Status:     "test",
 		}
@@ -243,11 +256,19 @@ func (s *orderRepoTestSuite) TestGet2() {
 		}
 
 		product := models.Product{
+			ID:          1,
 			ProductName: "test",
 			Description: "test",
 			Price:       10.11,
 			SellerID:    seller.ID,
 			Seller:      &seller,
+		}
+
+		detail := models.OrderDetail{
+			ProductID:  product.ID,
+			Product:    &product,
+			Quantity:   1,
+			TotalPrice: 10,
 		}
 
 		order := models.Order{
@@ -257,51 +278,39 @@ func (s *orderRepoTestSuite) TestGet2() {
 			Seller:          &seller,
 			SourceAddress:   "test",
 			DeliveryAddress: "test",
-			Items: []*models.Product{
-				&product,
-				&product,
-				&product,
+			Products: []models.OrderDetail{
+				detail, detail, detail,
 			},
-			Quantity:   3,
-			Price:      25.123,
 			TotalPrice: 100.123,
-			Status:     "Pending",
+			Status:     "test",
 		}
 
 		order2 := models.Order{
-			BuyerID:         buyer2.ID,
-			Buyer:           &buyer2,
+			BuyerID:         buyer.ID,
+			Buyer:           &buyer,
 			SellerID:        seller.ID,
 			Seller:          &seller,
 			SourceAddress:   "test",
 			DeliveryAddress: "test",
-			Items: []*models.Product{
-				&product,
-				&product,
-				&product,
+			Products: []models.OrderDetail{
+				detail, detail, detail,
 			},
-			Quantity:   3,
-			Price:      25.123,
 			TotalPrice: 100.123,
-			Status:     "Completed",
+			Status:     "test",
 		}
 
 		order3 := models.Order{
 			BuyerID:         buyer2.ID,
-			Buyer:           &buyer2,
+			Buyer:           &buyer,
 			SellerID:        seller.ID,
 			Seller:          &seller,
 			SourceAddress:   "test",
 			DeliveryAddress: "test",
-			Items: []*models.Product{
-				&product,
-				&product,
-				&product,
+			Products: []models.OrderDetail{
+				detail, detail, detail,
 			},
-			Quantity:   3,
-			Price:      25.123,
 			TotalPrice: 100.123,
-			Status:     "Pending",
+			Status:     "Completed",
 		}
 
 		_, err := s.OrderRepo.Store(&order)
@@ -347,11 +356,19 @@ func (s *orderRepoTestSuite) TestUpdate() {
 		}
 
 		product := models.Product{
+			ID:          1,
 			ProductName: "test",
 			Description: "test",
 			Price:       10.11,
 			SellerID:    seller.ID,
 			Seller:      &seller,
+		}
+
+		detail := models.OrderDetail{
+			ProductID:  product.ID,
+			Product:    &product,
+			Quantity:   1,
+			TotalPrice: 10,
 		}
 
 		order := models.Order{
@@ -361,13 +378,9 @@ func (s *orderRepoTestSuite) TestUpdate() {
 			Seller:          &seller,
 			SourceAddress:   "test",
 			DeliveryAddress: "test",
-			Items: []*models.Product{
-				&product,
-				&product,
-				&product,
+			Products: []models.OrderDetail{
+				detail, detail, detail,
 			},
-			Quantity:   3,
-			Price:      25.123,
 			TotalPrice: 100.123,
 			Status:     "test",
 		}

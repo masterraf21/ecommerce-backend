@@ -7,6 +7,7 @@ import (
 
 	"github.com/masterraf21/ecommerce-backend/configs"
 	"github.com/masterraf21/ecommerce-backend/models"
+	"github.com/masterraf21/ecommerce-backend/utils/mongodb"
 	"github.com/stretchr/testify/suite"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -22,7 +23,7 @@ func TestSellerRepository(t *testing.T) {
 }
 
 func (s *sellerRepoTestSuite) SetupSuite() {
-	instance := configureMongo()
+	instance := mongodb.ConfigureMongo()
 	s.Instance = instance
 	counterRepo := NewCounterRepo(instance)
 	s.SellerRepo = NewSellerRepo(instance, counterRepo)

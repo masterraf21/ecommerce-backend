@@ -2,7 +2,6 @@ package mongodb
 
 import (
 	"context"
-	"log"
 	"testing"
 	"time"
 
@@ -21,29 +20,12 @@ type counterRepoTestSuite struct {
 	CounterRepo models.CounterRepository
 }
 
-func configureMongo() *mongo.Database {
-	option := mongodb.Option{
-		Hosts:    configs.MongoDB.Hosts,
-		Database: configs.MongoDB.Database,
-		Options:  configs.MongoDB.Options,
-	}
-
-	instance, err := mongodb.Init(option)
-	if err != nil {
-		log.Fatalf("%s: %s", "Failed to connect mongodb", err)
-	}
-
-	log.Println("MongoDB connection is successfully established!")
-
-	return instance
-}
-
 func TestCounterRepository(t *testing.T) {
 	suite.Run(t, new(counterRepoTestSuite))
 }
 
 func (s *counterRepoTestSuite) SetupSuite() {
-	instance := configureMongo()
+	instance := mongodb.ConfigureMongo()
 	s.Instance = instance
 	s.CounterRepo = NewCounterRepo(instance)
 }

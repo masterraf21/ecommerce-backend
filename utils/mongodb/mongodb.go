@@ -3,8 +3,10 @@ package mongodb
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 
+	"github.com/masterraf21/ecommerce-backend/configs"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -15,6 +17,24 @@ type Option struct {
 	Hosts    string
 	Database string
 	Options  string
+}
+
+// ConfigureMongo for connecting to mongo
+func ConfigureMongo() *mongo.Database {
+	option := Option{
+		Hosts:    configs.MongoDB.Hosts,
+		Database: configs.MongoDB.Database,
+		Options:  configs.MongoDB.Options,
+	}
+
+	instance, err := Init(option)
+	if err != nil {
+		log.Fatalf("%s: %s", "Failed to connect mongodb", err)
+	}
+
+	log.Println("MongoDB connection is successfully established!")
+
+	return instance
 }
 
 // NewWriteModelCollection function

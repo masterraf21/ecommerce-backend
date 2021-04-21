@@ -19,3 +19,18 @@ type SellerRepository interface {
 	GetByOID(oid primitive.ObjectID) (*Seller, error)
 	UpdateArbitrary(id uint32, key string, value interface{}) error
 }
+
+// SellerBody body for buyer
+type SellerBody struct {
+	Email         string `json:"email"`
+	Name          string `json:"name"`
+	Password      string `json:"password"`
+	PickupAddress string `json:"pickup_address"`
+}
+
+// SellerUsecase for seller usecase
+type SellerUsecase interface {
+	CreateSeller(seller SellerBody) (uint32, error)
+	GetAll() ([]Seller, error)
+	GetByID(id uint32) (*Seller, error)
+}
