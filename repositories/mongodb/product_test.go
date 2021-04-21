@@ -37,9 +37,9 @@ func (s *productRepoTestSuite) TearDownTest() {
 	defer cancel()
 
 	err := testUtil.DropProduct(ctx, s.Instance)
-	handleError(err)
+	testUtil.HandleError(err)
 	err = testUtil.DropCounter(ctx, s.Instance)
-	handleError(err)
+	testUtil.HandleError(err)
 }
 
 func (s *productRepoTestSuite) TearDownSuite() {
@@ -47,9 +47,9 @@ func (s *productRepoTestSuite) TearDownSuite() {
 	defer cancel()
 
 	err := testUtil.DropProduct(ctx, s.Instance)
-	handleError(err)
+	testUtil.HandleError(err)
 	err = testUtil.DropCounter(ctx, s.Instance)
-	handleError(err)
+	testUtil.HandleError(err)
 }
 
 func (s *productRepoTestSuite) TestStore() {
@@ -71,7 +71,7 @@ func (s *productRepoTestSuite) TestStore() {
 		}
 
 		oid, err := s.ProductRepo.Store(&product)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		result, err := s.ProductRepo.GetByOID(oid)
 		s.Require().NoError(err)
@@ -98,7 +98,7 @@ func (s *productRepoTestSuite) TestStore() {
 		}
 
 		oid, err := s.ProductRepo.Store(&product)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		result, err := s.ProductRepo.GetByOID(oid)
 		s.Require().NoError(err)
@@ -127,7 +127,7 @@ func (s *productRepoTestSuite) TestGet() {
 		}
 
 		_, err := s.ProductRepo.Store(&product)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		result, err := s.ProductRepo.GetByID(uint32(1))
 		s.Require().NoError(err)
@@ -154,16 +154,16 @@ func (s *productRepoTestSuite) TestGet() {
 		}
 
 		_, err := s.ProductRepo.Store(&product)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		_, err = s.ProductRepo.Store(&product)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		_, err = s.ProductRepo.Store(&product)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		result, err := s.ProductRepo.GetAll()
-		handleError(err)
+		testUtil.HandleError(err)
 
 		s.Assert().Equal(4, len(result))
 	})
@@ -204,22 +204,22 @@ func (s *productRepoTestSuite) TestGet2() {
 		}
 
 		_, err := s.ProductRepo.Store(&product1)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		_, err = s.ProductRepo.Store(&product1)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		_, err = s.ProductRepo.Store(&product1)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		_, err = s.ProductRepo.Store(&product2)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		_, err = s.ProductRepo.Store(&product2)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		result, err := s.ProductRepo.GetBySellerID(uint32(2))
-		handleError(err)
+		testUtil.HandleError(err)
 
 		s.Assert().Equal(2, len(result))
 	})
@@ -244,13 +244,13 @@ func (s *productRepoTestSuite) TestUpdate() {
 		}
 
 		oid, err := s.ProductRepo.Store(&product)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		err = s.ProductRepo.UpdateArbitrary(uint32(1), "price", float32(99.9))
-		handleError(err)
+		testUtil.HandleError(err)
 
 		result, err := s.ProductRepo.GetByOID(oid)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		s.Require().Equal(float32(99.9), result.Price)
 	})

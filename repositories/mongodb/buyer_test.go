@@ -14,12 +14,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func handleError(err error) {
-	if err != nil {
-		panic(err)
-	}
-}
-
 type buyerRepoTestSuite struct {
 	suite.Suite
 	Instance  *mongo.Database
@@ -42,9 +36,9 @@ func (s *buyerRepoTestSuite) TearDownTest() {
 	defer cancel()
 
 	err := testUtil.DropBuyer(ctx, s.Instance)
-	handleError(err)
+	testUtil.HandleError(err)
 	err = testUtil.DropCounter(ctx, s.Instance)
-	handleError(err)
+	testUtil.HandleError(err)
 }
 
 func (s *buyerRepoTestSuite) TearDownSuite() {
@@ -52,9 +46,9 @@ func (s *buyerRepoTestSuite) TearDownSuite() {
 	defer cancel()
 
 	err := testUtil.DropBuyer(ctx, s.Instance)
-	handleError(err)
+	testUtil.HandleError(err)
 	err = testUtil.DropCounter(ctx, s.Instance)
-	handleError(err)
+	testUtil.HandleError(err)
 }
 
 func (s *buyerRepoTestSuite) TestStore1() {
@@ -67,7 +61,7 @@ func (s *buyerRepoTestSuite) TestStore1() {
 		}
 
 		oid, err := s.BuyerRepo.Store(&buyer)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		result, err := s.BuyerRepo.GetByOID(oid)
 		s.Require().NoError(err)
@@ -87,10 +81,10 @@ func (s *buyerRepoTestSuite) TestStore1() {
 		}
 
 		oid, err := s.BuyerRepo.Store(&buyer)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		result, err := s.BuyerRepo.GetByOID(oid)
-		handleError(err)
+		testUtil.HandleError(err)
 		s.Require().NoError(err)
 		s.Assert().EqualValues(2, result.ID)
 		s.Assert().Equal(buyer.Email, result.Email)
@@ -109,19 +103,19 @@ func (s *buyerRepoTestSuite) TestStore2() {
 			DeliveryAddress: "test",
 		}
 		_, err := s.BuyerRepo.Store(&buyer)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		_, err = s.BuyerRepo.Store(&buyer)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		err = s.BuyerRepo.UpdateArbitrary(uint32(1), "name", "update")
-		handleError(err)
+		testUtil.HandleError(err)
 
 		oid, err := s.BuyerRepo.Store(&buyer)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		result, err := s.BuyerRepo.GetByOID(oid)
-		handleError(err)
+		testUtil.HandleError(err)
 		s.Require().NoError(err)
 		s.Assert().EqualValues(3, result.ID)
 		s.Assert().Equal(buyer.Email, result.Email)
@@ -140,10 +134,10 @@ func (s *buyerRepoTestSuite) TestGet1() {
 			DeliveryAddress: "test",
 		}
 		_, err := s.BuyerRepo.Store(&buyer)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		result, err := s.BuyerRepo.GetByID(uint32(1))
-		handleError(err)
+		testUtil.HandleError(err)
 		s.Require().NoError(err)
 		s.Assert().EqualValues(1, result.ID)
 		s.Assert().Equal(buyer.Email, result.Email)
@@ -160,16 +154,16 @@ func (s *buyerRepoTestSuite) TestGet1() {
 			DeliveryAddress: "test",
 		}
 		_, err := s.BuyerRepo.Store(&buyer)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		_, err = s.BuyerRepo.Store(&buyer)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		_, err = s.BuyerRepo.Store(&buyer)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		result, err := s.BuyerRepo.GetAll()
-		handleError(err)
+		testUtil.HandleError(err)
 
 		s.Assert().Equal(4, len(result))
 	})
@@ -178,7 +172,7 @@ func (s *buyerRepoTestSuite) TestGet1() {
 func (s *buyerRepoTestSuite) TestGet2() {
 	s.Run("Get Empty Data", func() {
 		result, err := s.BuyerRepo.GetByID(uint32(1))
-		handleError(err)
+		testUtil.HandleError(err)
 		s.Assert().Nil(result)
 	})
 }
@@ -192,13 +186,13 @@ func (s *buyerRepoTestSuite) TestUpdate() {
 			DeliveryAddress: "test",
 		}
 		oid, err := s.BuyerRepo.Store(&buyer)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		err = s.BuyerRepo.UpdateArbitrary(uint32(1), "name", "update")
-		handleError(err)
+		testUtil.HandleError(err)
 
 		result, err := s.BuyerRepo.GetByOID(oid)
-		handleError(err)
+		testUtil.HandleError(err)
 		s.Require().NoError(err)
 		s.Require().Equal("update", result.Name)
 	})

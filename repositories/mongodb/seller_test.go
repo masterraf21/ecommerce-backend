@@ -21,7 +21,7 @@ type sellerRepoTestSuite struct {
 }
 
 func TestSellerRepository(t *testing.T) {
-	// suite.Run(t, new(sellerRepoTestSuite))
+	suite.Run(t, new(sellerRepoTestSuite))
 }
 
 func (s *sellerRepoTestSuite) SetupSuite() {
@@ -36,9 +36,9 @@ func (s *sellerRepoTestSuite) TearDownTest() {
 	defer cancel()
 
 	err := testUtil.DropSeller(ctx, s.Instance)
-	handleError(err)
+	testUtil.HandleError(err)
 	err = testUtil.DropCounter(ctx, s.Instance)
-	handleError(err)
+	testUtil.HandleError(err)
 }
 
 func (s *sellerRepoTestSuite) TearDownSuite() {
@@ -46,9 +46,9 @@ func (s *sellerRepoTestSuite) TearDownSuite() {
 	defer cancel()
 
 	err := testUtil.DropSeller(ctx, s.Instance)
-	handleError(err)
+	testUtil.HandleError(err)
 	err = testUtil.DropCounter(ctx, s.Instance)
-	handleError(err)
+	testUtil.HandleError(err)
 }
 
 func (s *sellerRepoTestSuite) TestStore() {
@@ -61,7 +61,7 @@ func (s *sellerRepoTestSuite) TestStore() {
 		}
 
 		oid, err := s.SellerRepo.Store(&seller)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		result, err := s.SellerRepo.GetByOID(oid)
 		s.Require().NoError(err)
@@ -81,7 +81,7 @@ func (s *sellerRepoTestSuite) TestStore() {
 		}
 
 		oid, err := s.SellerRepo.Store(&seller)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		result, err := s.SellerRepo.GetByOID(oid)
 		s.Require().NoError(err)
@@ -103,7 +103,7 @@ func (s *sellerRepoTestSuite) TestGet1() {
 		}
 
 		_, err := s.SellerRepo.Store(&seller)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		result, err := s.SellerRepo.GetByID(uint32(1))
 		s.Require().NoError(err)
@@ -123,16 +123,16 @@ func (s *sellerRepoTestSuite) TestGet1() {
 		}
 
 		_, err := s.SellerRepo.Store(&seller)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		_, err = s.SellerRepo.Store(&seller)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		_, err = s.SellerRepo.Store(&seller)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		result, err := s.SellerRepo.GetAll()
-		handleError(err)
+		testUtil.HandleError(err)
 
 		s.Assert().Equal(4, len(result))
 	})
@@ -148,13 +148,13 @@ func (s *sellerRepoTestSuite) TestUpdate() {
 		}
 
 		oid, err := s.SellerRepo.Store(&seller)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		err = s.SellerRepo.UpdateArbitrary(uint32(1), "name", "update")
-		handleError(err)
+		testUtil.HandleError(err)
 
 		result, err := s.SellerRepo.GetByOID(oid)
-		handleError(err)
+		testUtil.HandleError(err)
 		s.Require().NoError(err)
 		s.Require().Equal("update", result.Name)
 	})

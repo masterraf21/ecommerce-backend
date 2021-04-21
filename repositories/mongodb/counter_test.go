@@ -36,9 +36,9 @@ func (s *counterRepoTestSuite) TearDownTest() {
 	defer cancel()
 
 	err := testUtil.DropBuyer(ctx, s.Instance)
-	handleError(err)
+	testUtil.HandleError(err)
 	err = testUtil.DropCounter(ctx, s.Instance)
-	handleError(err)
+	testUtil.HandleError(err)
 }
 
 func (s *counterRepoTestSuite) TearDownSuite() {
@@ -46,9 +46,9 @@ func (s *counterRepoTestSuite) TearDownSuite() {
 	defer cancel()
 
 	err := testUtil.DropBuyer(ctx, s.Instance)
-	handleError(err)
+	testUtil.HandleError(err)
 	err = testUtil.DropCounter(ctx, s.Instance)
-	handleError(err)
+	testUtil.HandleError(err)
 }
 
 func (s *counterRepoTestSuite) TestGetEmpty() {
@@ -57,7 +57,7 @@ func (s *counterRepoTestSuite) TestGetEmpty() {
 		identifier := "id_buyer"
 
 		id, err := s.CounterRepo.Get(collectionName, identifier)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		s.Equal(uint32(1), id)
 	})
@@ -85,10 +85,10 @@ func (s *counterRepoTestSuite) TestGetExisting() {
 			bson.M{"$set": buyer},
 			options.Update().SetUpsert(true),
 		)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		id, err := s.CounterRepo.Get(collectionName, identifier)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		s.Assert().EqualValues(1, id)
 	})

@@ -37,9 +37,9 @@ func (s *orderRepoTestSuite) TearDownTest() {
 	defer cancel()
 
 	err := testUtil.DropOrder(ctx, s.Instance)
-	handleError(err)
+	testUtil.HandleError(err)
 	err = testUtil.DropCounter(ctx, s.Instance)
-	handleError(err)
+	testUtil.HandleError(err)
 }
 
 func (s *orderRepoTestSuite) TearDownSuite() {
@@ -47,9 +47,9 @@ func (s *orderRepoTestSuite) TearDownSuite() {
 	defer cancel()
 
 	err := testUtil.DropOrder(ctx, s.Instance)
-	handleError(err)
+	testUtil.HandleError(err)
 	err = testUtil.DropCounter(ctx, s.Instance)
-	handleError(err)
+	testUtil.HandleError(err)
 }
 
 func (s *orderRepoTestSuite) TestStore() {
@@ -100,10 +100,10 @@ func (s *orderRepoTestSuite) TestStore() {
 		}
 
 		oid, err := s.OrderRepo.Store(&order)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		result, err := s.OrderRepo.GetByOID(oid)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		s.Assert().EqualValues(1, result.ID)
 		s.Assert().Nil(result.Buyer)
@@ -160,10 +160,10 @@ func (s *orderRepoTestSuite) TestGet1() {
 		}
 
 		_, err := s.OrderRepo.Store(&order)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		result, err := s.OrderRepo.GetByID(uint32(1))
-		handleError(err)
+		testUtil.HandleError(err)
 
 		s.Assert().EqualValues(1, result.ID)
 		s.Assert().True(reflect.DeepEqual(buyer, *result.Buyer))
@@ -218,16 +218,16 @@ func (s *orderRepoTestSuite) TestGet1() {
 		}
 
 		_, err := s.OrderRepo.Store(&order)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		_, err = s.OrderRepo.Store(&order)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		_, err = s.OrderRepo.Store(&order)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		result, err := s.OrderRepo.GetAll()
-		handleError(err)
+		testUtil.HandleError(err)
 
 		s.Assert().Equal(4, len(result))
 	})
@@ -318,16 +318,16 @@ func (s *orderRepoTestSuite) TestGet2() {
 		}
 
 		_, err := s.OrderRepo.Store(&order)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		_, err = s.OrderRepo.Store(&order2)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		_, err = s.OrderRepo.Store(&order3)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		result, err := s.OrderRepo.GetByBuyerIDAndStatus(buyer2.ID, "Completed")
-		handleError(err)
+		testUtil.HandleError(err)
 
 		s.Assert().Equal(1, len(result))
 	})
@@ -336,7 +336,7 @@ func (s *orderRepoTestSuite) TestGet2() {
 func (s *orderRepoTestSuite) TestGet3() {
 	s.Run("Get empty data", func() {
 		result, err := s.OrderRepo.GetByBuyerIDAndStatus(uint32(1), "test")
-		handleError(err)
+		testUtil.HandleError(err)
 		s.Require().Equal(0, len(result))
 	})
 }
@@ -390,13 +390,13 @@ func (s *orderRepoTestSuite) TestUpdate() {
 		}
 
 		oid, err := s.OrderRepo.Store(&order)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		err = s.OrderRepo.UpdateArbitrary(uint32(1), "source_address", "update")
-		handleError(err)
+		testUtil.HandleError(err)
 
 		result, err := s.OrderRepo.GetByOID(oid)
-		handleError(err)
+		testUtil.HandleError(err)
 
 		s.Assert().Equal("update", result.SourceAddress)
 	})
