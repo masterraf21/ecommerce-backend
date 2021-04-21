@@ -2,6 +2,7 @@ package mongodb
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"github.com/masterraf21/ecommerce-backend/configs"
@@ -55,6 +56,12 @@ func (r *productRepo) GetAll() (res []models.Product, error error) {
 
 	cursor, err := collection.Find(ctx, bson.M{})
 	if err != nil {
+		if strings.Contains(err.Error(), "mongo: no documents") {
+			res = make([]models.Product, 0)
+			err = nil
+			return
+		}
+
 		return
 	}
 
@@ -73,6 +80,12 @@ func (r *productRepo) GetBySellerID(sellerID uint32) (res []models.Product, err 
 
 	cursor, err := collection.Find(ctx, bson.M{"id_seller": sellerID})
 	if err != nil {
+		if strings.Contains(err.Error(), "mongo: no documents") {
+			res = make([]models.Product, 0)
+			err = nil
+			return
+		}
+
 		return
 	}
 
@@ -91,6 +104,11 @@ func (r *productRepo) GetByID(id uint32) (res *models.Product, err error) {
 
 	err = collection.FindOne(ctx, bson.M{"id_product": id}).Decode(&res)
 	if err != nil {
+		if strings.Contains(err.Error(), "mongo: no documents") {
+			err = nil
+			return
+		}
+
 		return
 	}
 
@@ -105,6 +123,11 @@ func (r *productRepo) GetByOID(oid primitive.ObjectID) (res *models.Product, err
 
 	err = collection.FindOne(ctx, bson.M{"_id": oid}).Decode(&res)
 	if err != nil {
+		if strings.Contains(err.Error(), "mongo: no documents") {
+			err = nil
+			return
+		}
+
 		return
 	}
 

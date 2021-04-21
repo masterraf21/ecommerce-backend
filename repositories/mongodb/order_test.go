@@ -102,7 +102,7 @@ func (s *orderRepoTestSuite) TestStore() {
 	})
 }
 
-func (s *orderRepoTestSuite) TestGet() {
+func (s *orderRepoTestSuite) TestGet1() {
 	s.Run("Get Order by ID", func() {
 		buyer := models.Buyer{
 			ID:              1,
@@ -317,6 +317,14 @@ func (s *orderRepoTestSuite) TestGet2() {
 		handleError(err)
 
 		s.Assert().Equal(1, len(result))
+	})
+}
+
+func (s *orderRepoTestSuite) TestGet3() {
+	s.Run("Get empty data", func() {
+		result, err := s.OrderRepo.GetByBuyerIDAndStatus(uint32(1), "test")
+		handleError(err)
+		s.Require().Equal(0, len(result))
 	})
 }
 

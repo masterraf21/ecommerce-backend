@@ -2,6 +2,7 @@ package mongodb
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"github.com/masterraf21/ecommerce-backend/configs"
@@ -55,6 +56,12 @@ func (r *orderRepo) GetAll() (res []models.Order, err error) {
 
 	cursor, err := collection.Find(ctx, bson.M{})
 	if err != nil {
+		if strings.Contains(err.Error(), "mongo: no documents") {
+			res = make([]models.Order, 0)
+			err = nil
+			return
+		}
+
 		return
 	}
 
@@ -73,6 +80,11 @@ func (r *orderRepo) GetByID(id uint32) (res *models.Order, err error) {
 
 	err = collection.FindOne(ctx, bson.M{"id_order": id}).Decode(&res)
 	if err != nil {
+		if strings.Contains(err.Error(), "mongo: no documents") {
+			err = nil
+			return
+		}
+
 		return
 	}
 
@@ -87,6 +99,11 @@ func (r *orderRepo) GetByOID(oid primitive.ObjectID) (res *models.Order, err err
 
 	err = collection.FindOne(ctx, bson.M{"_id": oid}).Decode(&res)
 	if err != nil {
+		if strings.Contains(err.Error(), "mongo: no documents") {
+			err = nil
+			return
+		}
+
 		return
 	}
 
@@ -119,6 +136,12 @@ func (r *orderRepo) GetBySellerID(sellerID uint32) (res []models.Order, err erro
 
 	cursor, err := collection.Find(ctx, bson.M{"id_seller": sellerID})
 	if err != nil {
+		if strings.Contains(err.Error(), "mongo: no documents") {
+			res = make([]models.Order, 0)
+			err = nil
+			return
+		}
+
 		return
 	}
 
@@ -137,6 +160,12 @@ func (r *orderRepo) GetByBuyerID(buyerID uint32) (res []models.Order, err error)
 
 	cursor, err := collection.Find(ctx, bson.M{"id_buyer": buyerID})
 	if err != nil {
+		if strings.Contains(err.Error(), "mongo: no documents") {
+			res = make([]models.Order, 0)
+			err = nil
+			return
+		}
+
 		return
 	}
 
@@ -155,6 +184,12 @@ func (r *orderRepo) GetByBuyerIDAndStatus(buyerID uint32, status string) (res []
 
 	cursor, err := collection.Find(ctx, bson.M{"id_buyer": buyerID, "status": status})
 	if err != nil {
+		if strings.Contains(err.Error(), "mongo: no documents") {
+			res = make([]models.Order, 0)
+			err = nil
+			return
+		}
+
 		return
 	}
 
@@ -173,6 +208,12 @@ func (r *orderRepo) GetBySellerIDAndStatus(sellerID uint32, status string) (res 
 
 	cursor, err := collection.Find(ctx, bson.M{"id_seller": sellerID, "status": status})
 	if err != nil {
+		if strings.Contains(err.Error(), "mongo: no documents") {
+			res = make([]models.Order, 0)
+			err = nil
+			return
+		}
+
 		return
 	}
 
@@ -191,6 +232,12 @@ func (r *orderRepo) GetByStatus(status string) (res []models.Order, err error) {
 
 	cursor, err := collection.Find(ctx, bson.M{"status": status})
 	if err != nil {
+		if strings.Contains(err.Error(), "mongo: no documents") {
+			res = make([]models.Order, 0)
+			err = nil
+			return
+		}
+
 		return
 	}
 

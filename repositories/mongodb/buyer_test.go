@@ -126,7 +126,7 @@ func (s *buyerRepoTestSuite) TestStore2() {
 	})
 }
 
-func (s *buyerRepoTestSuite) TestGet() {
+func (s *buyerRepoTestSuite) TestGet1() {
 	s.Run("Get a Buyer Data by ID", func() {
 		buyer := models.Buyer{
 			Email:           "test",
@@ -167,6 +167,14 @@ func (s *buyerRepoTestSuite) TestGet() {
 		handleError(err)
 
 		s.Assert().Equal(4, len(result))
+	})
+}
+
+func (s *buyerRepoTestSuite) TestGet2() {
+	s.Run("Get Empty Data", func() {
+		result, err := s.BuyerRepo.GetByID(uint32(1))
+		handleError(err)
+		s.Assert().Nil(result)
 	})
 }
 

@@ -2,6 +2,7 @@ package mongodb
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"github.com/masterraf21/ecommerce-backend/configs"
@@ -73,6 +74,11 @@ func (r *sellerRepo) GetByID(id uint32) (res *models.Seller, err error) {
 
 	err = collection.FindOne(ctx, bson.M{"id_seller": id}).Decode(&res)
 	if err != nil {
+		if strings.Contains(err.Error(), "mongo: no documents") {
+			err = nil
+			return
+		}
+
 		return
 	}
 
@@ -87,6 +93,11 @@ func (r *sellerRepo) GetByOID(oid primitive.ObjectID) (res *models.Seller, err e
 
 	err = collection.FindOne(ctx, bson.M{"_id": oid}).Decode(&res)
 	if err != nil {
+		if strings.Contains(err.Error(), "mongo: no documents") {
+			err = nil
+			return
+		}
+
 		return
 	}
 
