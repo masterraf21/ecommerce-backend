@@ -123,10 +123,8 @@ func (s *orderUsecaseTestSuite) TestCreate() {
 		testUtil.HandleError(err)
 
 		body := models.OrderBody{
-			BuyerID:         uint32(1),
-			SellerID:        uint32(1),
-			SourceAddress:   "test",
-			DeliveryAddress: "test",
+			BuyerID:  uint32(1),
+			SellerID: uint32(1),
 			Products: []models.ProductDetail{
 				{
 					ProductID: uint32(1),
@@ -157,10 +155,8 @@ func (s *orderUsecaseTestSuite) TestCreate() {
 func (s *orderUsecaseTestSuite) TestCreate2() {
 	s.Run("Create order without other data available", func() {
 		body := models.OrderBody{
-			BuyerID:         uint32(1),
-			SellerID:        uint32(1),
-			SourceAddress:   "test",
-			DeliveryAddress: "test",
+			BuyerID:  uint32(1),
+			SellerID: uint32(1),
 			Products: []models.ProductDetail{
 				{
 					ProductID: uint32(1),

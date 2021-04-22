@@ -32,12 +32,9 @@ type ProductDetail struct {
 
 // OrderBody body from json
 type OrderBody struct {
-	BuyerID         uint32          `json:"id_buyer"`
-	SellerID        uint32          `json:"id_seller"`
-	SourceAddress   string          `json:"source_address"`
-	DeliveryAddress string          `json:"delivery_address"`
-	Products        []ProductDetail `json:"products"`
-	TotalPrice      float32         `json:"total_price"`
+	BuyerID  uint32          `json:"id_buyer"`
+	SellerID uint32          `json:"id_seller"`
+	Products []ProductDetail `json:"products"`
 }
 
 // OrderRepository reprresents repo functions for order

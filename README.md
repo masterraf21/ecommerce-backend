@@ -1,12 +1,18 @@
 # e-commerce backend
 Backend for e-commerce app
 
+# DOCS
+
+* [API Docs](docs/API.md)
+* [Testing](docs/testing/TEST.md)
+* [Notes](docs/NOTES.md)
 # Development Setup
 
 ## Tools
 
 - Go version 1.3
 - Go Modules for dependency management.
+- MongoDB for Database
 
 ## Run Program
 
@@ -23,10 +29,10 @@ TIMEOUT_ON_SECONDS=120
 OPERATION_ON_EACH_CONTEXT=500
 ```
 
-You can store environment variables to a file, such as ".env". But, if you want to differentiate environment variables used by docker, you can give another name, such as ".env-no-docker". Run the program with commands below.
+You can store environment variables to a file, such as ".env". But, if you want to differentiate environment variables used by docker, you can give another name, such as ".env-no-docker". Run the program with commands below using gin for auto reloading.
 
 ```shell
-./cmds/env .env go run main.go
+make dev
 ```
 
 # Test Program
