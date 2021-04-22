@@ -107,7 +107,7 @@ func structToMap(item interface{}) map[string]interface{} {
 		v = v.Elem()
 	}
 	for i := 0; i < v.NumField(); i++ {
-		tag := v.Field(i).Tag.Get("json")
+		tag := v.Field(i).Tag.Get("bson")
 		field := reflectValue.Field(i).Interface()
 		if tag != "" && tag != "-" {
 			if v.Field(i).Type.Kind() == reflect.Struct {

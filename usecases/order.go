@@ -1,6 +1,8 @@
 package usecases
 
-import "github.com/masterraf21/ecommerce-backend/models"
+import (
+	"github.com/masterraf21/ecommerce-backend/models"
+)
 
 type orderUsecase struct {
 	Repo        models.OrderRepository
@@ -37,24 +39,30 @@ func (u *orderUsecase) CreateOrder(body models.OrderBody) (id uint32, err error)
 
 	orderDetails := make([]models.OrderDetail, 0)
 
-	for _, product := range body.Products {
-		ordDet := models.OrderDetail{
-			ProductID: product.ProductID,
-			Quantity:  product.Quantity,
-		}
-		orderDetails = append(orderDetails, ordDet)
-	}
-
 	var productPtr *models.Product
-	for _, orderDetails := range orderDetails {
-		productPtr, err = u.ProductRepo.GetByID(orderDetails.ProductID)
+	for _, product := range body.Products {
+		productPtr, err = u.ProductRepo.GetByID(product.ProductID)
 		if err != nil {
 			return
 		}
+
+		var orderDetail models.OrderDetail
+
 		if productPtr != nil {
-			orderDetails.Product = productPtr
-			orderDetails.TotalPrice = float32(orderDetails.Quantity) * productPtr.Price
+			orderDetail = models.OrderDetail{
+				ProductID:  product.ProductID,
+				Quantity:   product.Quantity,
+				Product:    productPtr,
+				TotalPrice: float32(product.Quantity) * productPtr.Price,
+			}
+		} else {
+			orderDetail = models.OrderDetail{
+				ProductID: product.ProductID,
+				Quantity:  product.Quantity,
+			}
 		}
+
+		orderDetails = append(orderDetails, orderDetail)
 	}
 
 	totalPrice := float32(0)
@@ -63,16 +71,21 @@ func (u *orderUsecase) CreateOrder(body models.OrderBody) (id uint32, err error)
 	}
 
 	order := models.Order{
-		BuyerID:         buyerPtr.ID,
-		Buyer:           buyerPtr,
-		SellerID:        sellerPtr.ID,
-		Seller:          sellerPtr,
-		SourceAddress:   body.SourceAddress,
-		DeliveryAddress: body.DeliveryAddress,
-		Products:        orderDetails,
-		TotalPrice:      totalPrice,
-		Status:          "Pending",
+		BuyerID:    body.BuyerID,
+		Buyer:      buyerPtr,
+		SellerID:   body.SellerID,
+		Seller:     sellerPtr,
+		Products:   orderDetails,
+		TotalPrice: totalPrice,
+		Status:     "Pending",
 	}
+	if sellerPtr != nil {
+		order.SourceAddress = sellerPtr.PickupAddress
+	}
+	if buyerPtr != nil {
+		order.DeliveryAddress = buyerPtr.DeliveryAddress
+	}
+
 	oid, err := u.Repo.Store(&order)
 	if err != nil {
 		return

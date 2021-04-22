@@ -71,27 +71,6 @@ func (s *buyerRepoTestSuite) TestStore1() {
 		s.Assert().Equal(buyer.Password, result.Password)
 		s.Assert().Equal(buyer.DeliveryAddress, result.DeliveryAddress)
 	})
-
-	s.Run("Store a single Buyer data after existing data stored", func() {
-		buyer := models.Buyer{
-			Email:           "test",
-			Name:            "test",
-			Password:        "test",
-			DeliveryAddress: "test",
-		}
-
-		oid, err := s.BuyerRepo.Store(&buyer)
-		testUtil.HandleError(err)
-
-		result, err := s.BuyerRepo.GetByOID(oid)
-		testUtil.HandleError(err)
-		s.Require().NoError(err)
-		s.Assert().EqualValues(2, result.ID)
-		s.Assert().Equal(buyer.Email, result.Email)
-		s.Assert().Equal(buyer.Name, result.Name)
-		s.Assert().Equal(buyer.Password, result.Password)
-		s.Assert().Equal(buyer.DeliveryAddress, result.DeliveryAddress)
-	})
 }
 
 func (s *buyerRepoTestSuite) TestStore2() {
@@ -126,26 +105,6 @@ func (s *buyerRepoTestSuite) TestStore2() {
 }
 
 func (s *buyerRepoTestSuite) TestGet1() {
-	s.Run("Get a Buyer Data by ID", func() {
-		buyer := models.Buyer{
-			Email:           "test",
-			Name:            "test",
-			Password:        "test",
-			DeliveryAddress: "test",
-		}
-		_, err := s.BuyerRepo.Store(&buyer)
-		testUtil.HandleError(err)
-
-		result, err := s.BuyerRepo.GetByID(uint32(1))
-		testUtil.HandleError(err)
-		s.Require().NoError(err)
-		s.Assert().EqualValues(1, result.ID)
-		s.Assert().Equal(buyer.Email, result.Email)
-		s.Assert().Equal(buyer.Name, result.Name)
-		s.Assert().Equal(buyer.Password, result.Password)
-		s.Assert().Equal(buyer.DeliveryAddress, result.DeliveryAddress)
-	})
-
 	s.Run("Get all Buyer data", func() {
 		buyer := models.Buyer{
 			Email:           "test",
@@ -165,7 +124,7 @@ func (s *buyerRepoTestSuite) TestGet1() {
 		result, err := s.BuyerRepo.GetAll()
 		testUtil.HandleError(err)
 
-		s.Assert().Equal(4, len(result))
+		s.Assert().Equal(3, len(result))
 	})
 }
 
